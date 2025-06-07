@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Edit Item{% endblock %}
+
+{% block content %}
+<h2>Edit Item</h2>
+<form method="POST" action="{{ url_for('edit_item', item_id=item.id) }}">
+    <label>Item Name</label>
+    <input type="text" name="name" value="{{ item.name }}" required>
+
+    <label>Unit Price</label>
+    <input type="text" name="price" value="{{ item.price }}" required>
+
+    <label>Quantity</label>
+    <input type="number" name="quantity" value="{{ item.quantity }}" min="0" required>
+
+    <button type="submit">Update</button>
+</form>
+{% endblock %}

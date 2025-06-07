@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Purchase</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <style>
+        .purchase-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+
+        .purchase-row select,
+        .purchase-row input[type="number"] {
+            flex: 1 1 45%;
+        }
+
+        .purchase-row button {
+            height: 44px;
+            padding: 0 12px;
+            font-size: 20px;
+            margin-top: 0;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .add-btn {
+            background-color: #27ae60;
+        }
+
+        .add-btn:hover {
+            background-color: #1e8449;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+    <script>
+        const itemPrices = {
+            {% for item in items %}
+            "{{ item.id }}": {{ item.price }},
+            {% endfor %}
+        };
+
+        function updateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('.purchase-row');
+
+            rows.forEach(row => {
+                const select = row.querySelector('select');
+                const quantityInput = row.querySelector('input[type="number"]');
+                const itemId = select.value;
+                const quantity = parseFloat(quantityInput.value) || 0;
+                const price = itemPrices[itemId] || 0;
+                total += price * quantity;
+            });
+
+            document.getElementById('total-amount').textContent = total.toFixed(2);
+        }
+
+        function addPurchaseRow() {
+            const container = document.getElementById('purchase-container');
+            const row = document.createElement('div');
+            row.className = 'purchase-row';
+            row.innerHTML = `
+                <select name="item_id[]" required onchange="updateTotal()">
+                    <option selected disabled>Select any</option>
+                    {% for item in items %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantity[]" placeholder="Quantity" min="1" required oninput="updateTotal()">
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove(); updateTotal()">❌</button>
+            `;
+            container.appendChild(row);
+        }
+
+        document.addEventListener("DOMContentLoaded", updateTotal);
+    </script>
+
+</head>
+<body>
+    <h2>Record Customer Purchase</h2>
+    <form method="post">
+        <div class="form-group">
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" id="customer_name" name="customer_name" placeholder="Customer Name" required>
+        </div>
+
+        <div id="purchase-container">
+            <div class="purchase-row">
+                <select name="item_id[]" required onchange="updateTotal()">
+                    <option selected disabled>Select any</option>
+                    {% for item in items %}
+                    <option value="{{ item.id }}">{{ item.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="quantity[]" placeholder="Quantity" min="1" required oninput="updateTotal()">
+
+                <button type="button" class="remove-btn" onclick="this.parentElement.remove()">❌</button>
+            </div>
+        </div>
+
+        <button type="button" class="add-btn" onclick="addPurchaseRow()">➕ Add Another Item</button><br><br>
+        <h3>Total: ₹<span id="total-amount">0.00</span></h3>
+
+        <button type="submit">Submit Purchase</button>
+    </form>
+    <a href="{{ url_for('dashboard') }}">⬅ Back to Dashboard</a>
+</body>
+</html>

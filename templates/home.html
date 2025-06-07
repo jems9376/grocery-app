@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block title %}Home - Purchases{% endblock %}
+
+{% block content %}
+<h2>Add Purchase</h2>
+<form method="POST" action="{{ url_for('add_purchase') }}" onsubmit="return validateForm()">
+    <div id="purchase-fields">
+        <div class="form-group">
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" id="customer_name" name="customer_name" placeholder="Customer Name" required oninput="showCustomerSuggestions(this)">
+            <div class="customer-suggestions suggestions"></div>
+        </div>
+
+        <!-- First purchase row -->
+        <div class="purchase-row">
+            <div class="row-header">
+                <label>1. Item </label>
+                <button type="button" class="delete" onclick="removePurchaseRow(this)">✖</button>
+            </div>
+            <input type="text" class="purchase-item" placeholder="Item name" autocomplete="off" required oninput="showItemSuggestions(this)">
+            <input type="hidden" name="item_id[]">
+            <div class="suggestions"></div>
+            <label>Unit Price</label>
+            <input type="text" class="unit-price" disabled value="0.00">
+            <label>Qty</label>
+            <input type="number" name="quantity[]" min="0.1" step="any" value="1" required oninput="updateTotal()">
+
+        </div>
+    </div>
+
+    <button type="button" class="edit" onclick="addPurchaseRow()">Add Row</button>
+    <h3>Total: ₹<span id="total-amount">0.00</span></h3>
+    <button type="submit" id="submit-btn">Submit</button>
+</form>
+
+<h2>Sales</h2>
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Item</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for p in purchases %}
+        <tr>
+            <td>{{ p.id }}</td>
+            <td>{{ p.customer_name }}</td>
+            <td>{{ p.item.name }}</td>
+            <td>{{ p.quantity }}</td>
+            <td>{{ p.total_price }}</td>
+            <td>{{ p.date.strftime("%d-%m-%Y") }}</td>
+            <td>
+                <a href="{{ url_for('edit_purchase', purchase_id=p.id) }}">Edit</a> |
+                <a href="{{ url_for('delete_purchase', purchase_id=p.id) }}" onclick="return confirm('Delete this purchase?')">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    const itemData = {
+        {% for item in items %}
+        "{{ item.name|e }}": { id: "{{ item.id }}", price: {{ item.price }}, base_quantity: {{ item.quantity }} },
+        {% endfor %}
+    };
+
+    const itemNames = Object.keys(itemData);
+
+    const customerNames = [
+        {% for name in customers %}
+        "{{ name|e }}",
+        {% endfor %}
+    ];
+
+    let purchaseRowCount = 1;
+
+    function addPurchaseRow() {
+    purchaseRowCount++;
+    const div = document.createElement("div");
+    div.classList.add("purchase-row");
+    div.innerHTML = `
+        <div class="row-header">
+            <label>${purchaseRowCount}. Item</label>
+            <button type="button" class="delete" onclick="removePurchaseRow(this)">✖</button>
+        </div>
+        <input type="text" class="purchase-item" placeholder="Item name" autocomplete="off" required oninput="showItemSuggestions(this)">
+        <input type="hidden" name="item_id[]">
+        <div class="suggestions"></div>
+
+        <label>Unit Price</label>
+        <input type="text" class="unit-price" disabled value="0.00">
+
+        <label>Qty</label>
+        <input type="number" name="quantity[]" min="0.1" step="any" value="1" required oninput="updateTotal()">
+    `;
+
+    document.getElementById("purchase-fields").appendChild(div);
+}
+
+
+    function removePurchaseRow(btn) {
+        const row = btn.closest('.purchase-row');
+        row.remove();
+        updateRowLabels();
+        updateTotal();
+    }
+
+    function updateRowLabels() {
+        const labels = document.querySelectorAll(".purchase-row label:first-child");
+        purchaseRowCount = 0;
+        labels.forEach((label, i) => {
+            purchaseRowCount++;
+            label.textContent = `${purchaseRowCount}. Item`;
+        });
+    }
+
+    function showItemSuggestions(input) {
+        const container = input.nextElementSibling.nextElementSibling; // .suggestions
+        const value = input.value.toLowerCase();
+        container.innerHTML = "";
+        if (!value) return;
+
+        const matches = itemNames.filter(name => name.toLowerCase().includes(value));
+        matches.slice(0, 5).forEach(match => {
+            const option = document.createElement("div");
+            option.textContent = match;
+            option.classList.add("suggestion");
+            option.onclick = () => {
+                input.value = match;
+                input.nextElementSibling.value = itemData[match].id;
+                container.innerHTML = "";
+
+                // Update unit price field
+                const row = input.closest(".purchase-row");
+                const unitPriceInput = row.querySelector(".unit-price");
+                unitPriceInput.value = itemData[match].price.toFixed(2);
+
+                updateTotal();
+            };
+            container.appendChild(option);
+        });
+    }
+
+
+    function showCustomerSuggestions(input) {
+        const container = document.querySelector(".customer-suggestions");
+        const value = input.value.toLowerCase();
+        container.innerHTML = "";
+        if (!value) return;
+
+        const matches = customerNames.filter(name => name.toLowerCase().includes(value));
+        matches.slice(0, 5).forEach(match => {
+            const option = document.createElement("div");
+            option.textContent = match;
+            option.classList.add("suggestion");
+            option.onclick = () => {
+                input.value = match;
+                container.innerHTML = "";
+            };
+            container.appendChild(option);
+        });
+    }
+
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.purchase-row').forEach(row => {
+            const itemName = row.querySelector('.purchase-item').value;
+            const quantity = parseFloat(row.querySelector('input[name="quantity[]"]').value) || 0;
+
+            const item = itemData[itemName];
+            if (!item) return;
+
+            const baseQty = item.base_quantity || 1; // Default to 1 to avoid divide-by-zero
+            const unitPrice = item.price / baseQty;
+            const itemTotal = unitPrice * quantity;
+
+            total += itemTotal;
+
+            // Update visible unit price field
+            row.querySelector('.unit-price').value = unitPrice.toFixed(2);
+        });
+        document.getElementById('total-amount').textContent = total.toFixed(2);
+    }
+
+
+    function validateForm() {
+        const rows = document.querySelectorAll('.purchase-row');
+        for (let row of rows) {
+            const itemNameInput = row.querySelector('.purchase-item');
+            const hiddenInput = row.querySelector('input[type="hidden"]');
+            const itemName = itemNameInput.value;
+            if (!itemData[itemName]) {
+                alert(`Invalid item name: "${itemName}"`);
+                return false;
+            }
+            hiddenInput.value = itemData[itemName].id;
+        }
+        return true;
+    }
+
+    // Close suggestions on outside click
+    document.addEventListener("click", (e) => {
+        document.querySelectorAll(".suggestions").forEach(s => {
+            if (!s.previousElementSibling.contains(e.target)) s.innerHTML = "";
+        });
+    });
+</script>
+
+<style>
+.suggestions {
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+    background: white;
+    position: absolute;
+    z-index: 1000;
+    width: 200px;
+    margin-top: -20px;
+}
+.suggestion {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.suggestion:hover {
+    background: #f0f0f0;
+}
+.purchase-row, .form-group {
+    position: relative;
+    margin-bottom: 15px;
+}
+</style>
+{% endblock %}

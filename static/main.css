@@ -1,0 +1,345 @@
+/* Reset some browser defaults */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding: 20px;
+    background-color: #f7f7f7;
+    color: #333;
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+/* Headings */
+h1, h2, h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+/* Container and Form */
+form, .container {
+    max-width: 95%;
+    width: 600px;
+    margin: 0 auto 40px auto;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+input, select, button, textarea {
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0 20px 0;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.item-row, .purchase-row {
+    position: relative;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-bottom: 15px;
+    border-radius: 8px;
+}
+
+
+/* Flex container to align label and cancel button */
+.row-header {
+    display: flex;
+    align-items: center;
+}
+
+
+
+
+/* Buttons */
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button[type="button"] {
+    width: auto;
+    margin-top: 0;
+    background-color: #27ae60;
+}
+
+button[type="button"]:hover {
+    background-color: #1e8449;
+}
+
+button.delete {
+    background-color: #e74c3c;
+    margin-left: 50%;
+    color:white;
+    padding: 10px;
+}
+
+button.delete:hover {
+    background-color: #c0392b;
+}
+
+button.edit {
+    background-color: #f39c12;
+}
+
+button.edit:hover {
+    background-color: #d68910;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    font-size: 16px;
+    counter-reset: rowNumber;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #3498db;
+    color: #fff;
+}
+
+td.row-number::before {
+    counter-increment: rowNumber;
+    content: counter(rowNumber);
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+/* Links */
+a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Flash Message */
+.flash-message {
+    max-width: 600px;
+    margin: 10px auto;
+    padding: 12px 18px;
+    background-color: #ffeaa7;
+    color: #333;
+    border-left: 5px solid #f1c40f;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: none;
+}
+
+.flash-message.show {
+    display: block;
+    animation: fadeInOut 3s ease forwards;
+}
+
+
+/* Form Field Numbering */
+.form-group-numbered label::before {
+    counter-increment: fieldNumber;
+    content: counter(fieldNumber) ". ";
+    margin-right: 6px;
+}
+
+.form-group-numbered {
+    counter-reset: fieldNumber;
+}
+
+/* Tab Navigation */
+.navbar {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.navbar a {
+    padding: 8px 14px;
+    background-color: #3498db;
+    color: white;
+    border-radius: 6px;
+    transition: 0.2s ease;
+}
+
+.navbar a:hover, .navbar a.active {
+    background-color: #2980b9;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #2c3e50;
+    padding: 10px 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    /*flex-wrap: wrap;*/
+}
+
+.navbar ul li {
+    margin: 0 15px;
+}
+
+.navbar ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 17px;
+}
+
+.navbar ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Pop-up style flash messages */
+.flash-message.popup {
+    animation: slideDown 0.5s ease forwards, fadeOut 0.5s ease 4s forwards;
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; display: none; }
+}
+
+/* Download Button */
+.download-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 18px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.download-btn:hover {
+    background-color: #45a049;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 15px;
+        font-size: 18px;
+    }
+
+    form, .container {
+        padding: 18px 14px;
+    }
+
+    input, select, button, textarea {
+        font-size: 17px;
+        padding: 14px;
+    }
+
+    th, td {
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    button {
+        font-size: 17px;
+        padding: 14px;
+    }
+
+    table {
+        font-size: 16px;
+        display: block;
+        overflow-x: auto;
+    }
+
+    h1, h2, h3 {
+        font-size: 1.8em;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background-color: #fff;
+        color: #000;
+    }
+
+    form, .container, table {
+        box-shadow: none;
+        border: none;
+    }
+
+    input, select, button, textarea {
+        border: none;
+        background: transparent;
+        color: #000;
+    }
+
+    button {
+        display: none; /* Hide buttons in print */
+    }
+
+    a {
+        color: #000;
+        text-decoration: underline;
+    }
+}
+
+
+@keyframes slideDown {
+    from { opacity: 0; top: 0px; }
+    to { opacity: 1; top: 10px; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; top: 0px; }
+}
+

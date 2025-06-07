@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Manage{% endblock %}
+
+{% block content %}
+<h2>Manage Data</h2>
+<form action="{{ url_for('sync_sheet') }}">
+    <button type="submit" class="download-btn">Sync to Google Sheets</button>
+</form>
+
+<br>
+
+<form action="{{ url_for('export_db_to_excel') }}">
+    <button type="submit" class="download-btn">Download Excel</button>
+</form>
+{% endblock %}
