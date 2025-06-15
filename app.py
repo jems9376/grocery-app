@@ -32,6 +32,7 @@ google_bp = make_google_blueprint(
     ],
     redirect_url="/dashboard"
 )
+print("Redirect URI being sent:", google_bp.redirect_url)
 app.register_blueprint(google_bp, url_prefix="/login")
 
 # Models
