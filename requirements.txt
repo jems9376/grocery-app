@@ -4,3 +4,4 @@ Flask-Dance
 pandas
 gspread
 oauth2client
+dotenv
