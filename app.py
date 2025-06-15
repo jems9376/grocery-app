@@ -30,7 +30,7 @@ google_bp = make_google_blueprint(
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile"
     ],
-    redirect_to="dashboard"  # Use `redirect_to` instead of `redirect_url`
+    redirect_url="/dashboard"
 )
 app.register_blueprint(google_bp, url_prefix="/login")
 
