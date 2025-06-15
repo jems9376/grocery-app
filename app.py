@@ -23,14 +23,14 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Google OAuth Blueprint
 google_bp = make_google_blueprint(
-    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID"),
-    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET"),  
+    client_id=os.getenv("GOOGLE_CLIENT_ID"),
+    client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
     scope=[
         "openid",
         "https://www.googleapis.com/auth/userinfo.email",
         "https://www.googleapis.com/auth/userinfo.profile"
     ],
-    redirect_url="/dashboard"
+    redirect_to="dashboard"  # Use `redirect_to` instead of `redirect_url`
 )
 app.register_blueprint(google_bp, url_prefix="/login")
 
