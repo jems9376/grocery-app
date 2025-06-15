@@ -23,8 +23,8 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # Google OAuth Blueprint
 google_bp = make_google_blueprint(
-    GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID"),
-    GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET"),  
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID"),
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET"),  
     scope=[
         "openid",
         "https://www.googleapis.com/auth/userinfo.email",
